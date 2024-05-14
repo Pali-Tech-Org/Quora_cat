@@ -1,6 +1,6 @@
 const {Client,IntentsBitField,PermissionsBitField } = require("discord.js");
 const sqlite3 = require("sqlite3").verbose();
-const main = require("./funcs.js");
+const {quora_cat} = require("./funcs.js");
 
 //================================================================================================
 const db = new sqlite3.Database("./quora_bot.db",sqlite3.OPEN_READWRITE,(err)=>{
@@ -18,50 +18,14 @@ intents:[
 });
 
 //================================================================================================
-function quora_cat (){
-    const data=db.all(`SELECT * FROM profiles `,[],(err,rows)=>{
-        if(err) return console.error(err.message);
-        rows.forEach((row) => {
-            profile_id = row["profileID"];
-            server_id = row["serverID"]
-            uid=row["uid"]
-            main(profile_id,uid).then((value)=>{
-                answer_id=value["answer_id"].toString(16);
-                url=value["url"];
-                const answers=db.all(`SELECT *  FROM answers WHERE answerID  =? AND serverID = ?`,[answer_id,server_id],(err,roww)=>{
-                    if(err) return console.error(err.message);
-                    if(roww.length==0){
-                    const channels=db.all(`SELECT *  FROM channels WHERE serverID  =? `,[server_id],(err,rowws)=>{
-                        if(err) return console.error(err.message);
-                        if(rowws.length>0){
-                            channel_id=rowws[0]["channelID"];
-                            channel = client.channels.cache.find(channel => channel.id == channel_id);
-                            channel.send(url);
-                            db.run(`INSERT INTO answers VALUES (?,?)`,[server_id, answer_id],(err)=>{
-                        if(err) return console.error(err.message);
-                    });
-                        }
-                });       
-                    }
-            });
 
-            }
-     
-       );
-        });
-           
-}); 
-    setTimeout(() => {
-            quora_cat();
-        }, 5000);
-}
 
 
 
 //================================================================================================
 client.on('ready',(c)=>{
 console.log("bot ready");
-quora_cat();
+quora_cat(db,c);
 });
 //================================================================================================
 client.on('messageCreate',(msg)=>{
@@ -121,4 +85,4 @@ client.on('messageCreate',(msg)=>{
 );
 
 //================================================================================================
-client.login("MTIzNjQzMTY1NzU0ODkxMDY0Mg.G_eYXc.wZ9jtdoZL89sUWQAa0l-Hrw3uLA9FFA7hnZS8g");
+client.login("Token");
