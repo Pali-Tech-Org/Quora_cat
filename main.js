@@ -1,10 +1,13 @@
-
 const {Client,IntentsBitField,PermissionsBitField } = require("discord.js");
 const sqlite3 = require("sqlite3").verbose();
 const {quora_cat,add_user,remove_user,set_channel} = require("./funcs.js");
+
+//================================================================================================
 const db = new sqlite3.Database("./quora_bot.db",sqlite3.OPEN_READWRITE,(err)=>{
     if(err) return console.error(err.message)
 });
+
+//================================================================================================
 const client = new Client({
 intents:[
     IntentsBitField.Flags.Guilds, 
@@ -13,13 +16,18 @@ intents:[
     IntentsBitField.Flags.MessageContent, 
 ],
 });
+
 //================================================================================================
 
 
+
+
+//================================================================================================
 client.on('ready',(c)=>{
 console.log("bot ready");
 quora_cat(db,c);
 });
+//================================================================================================
 client.on('messageCreate',(msg)=>{
  try {
 
@@ -41,11 +49,10 @@ client.on('messageCreate',(msg)=>{
     }
 
 } catch (e) {
-  console.log(e);
+  
 }
 }
 );
+
 //================================================================================================
-
-
 client.login("token");
