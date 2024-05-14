@@ -26,7 +26,7 @@ function quora_cat (){
             server_id = row["serverID"]
             uid=row["uid"]
             main(profile_id,uid).then((value)=>{
-                answer_id=value["answer_id"];
+                answer_id=value["answer_id"].toString(16);
                 url=value["url"];
                 const answers=db.all(`SELECT *  FROM answers WHERE answerID  =? AND serverID = ?`,[answer_id,server_id],(err,roww)=>{
                     if(err) return console.error(err.message);
@@ -66,8 +66,8 @@ quora_cat();
 //================================================================================================
 client.on('messageCreate',(msg)=>{
     if(msg.member.permissions.has(PermissionsBitField.Flags.KickMembers)){
-    const channel_id = Number(msg.channelId);
-    const server_id = Number(msg.guildId);
+    const channel_id = msg.channelId;
+    const server_id = msg.guildId.toString(16);
     const command=msg.content;
     if(command.startsWith("qr!set")){
         const data=db.all(`SELECT channelID  FROM channels WHERE serverID  =? `,[server_id],(err,row)=>{
@@ -88,7 +88,7 @@ client.on('messageCreate',(msg)=>{
     else if(command.startsWith("qr!add")){
         const profile_id=command.split(" ")[1];
         const uid=command.split(" ")[2];
-        const server_id = Number(msg.guildId);
+        const server_id = msg.guildId.toString(16);
         const data=db.all(`SELECT *  FROM profiles WHERE profileID  = ? AND serverID = ?`,[profile_id,server_id],(err,row)=>{
             if(err) return console.error(err.message);
             if(row.length == 0){
@@ -116,11 +116,9 @@ client.on('messageCreate',(msg)=>{
         });
       
     }
-    }else{
-        console.log("message")
     }
 }
 );
 
 //================================================================================================
-client.login("Token");
+client.login("MTIzNjQzMTY1NzU0ODkxMDY0Mg.G_eYXc.wZ9jtdoZL89sUWQAa0l-Hrw3uLA9FFA7hnZS8g");
