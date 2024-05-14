@@ -1,0 +1,11 @@
+
+CREATE TABLE answers (serverID int,answerID varchar(50));
+CREATE TABLE channels (serverID int,channelID int,PRIMARY KEY (serverID));
+CREATE TABLE profiles (serverID int,profileID varchar(50),uid int);
+
+
+
+
+
+
+
