@@ -1,6 +1,6 @@
 const process = require('node:process');
 
-
+// Start main =========================================
 async function main (profile,uid)  {
 
     const response = await fetch("https://www.quora.com/graphql/gql_para_POST?q=UserProfileAnswersMostRecent_RecentAnswers_Query", {
@@ -29,32 +29,33 @@ async function main (profile,uid)  {
       "method": "POST"
     });
       const body = await response.json();
-      answer = body["data"]["user"]["recentPublicAndPinnedAnswersConnection"]["edges"][0]
-      url=answer["node"]["url"];
+      let answer = body["data"]["user"]["recentPublicAndPinnedAnswersConnection"]["edges"][0]
+      let url=answer["node"]["url"];
     if (! url.startsWith("https")){
         url="https://www.quora.com"+url;
     }
 
         return {"answer_id":answer["node"]["aid"],"url":url};
     }
+// End main =========================================
 async function quora_cat  (db,client){
     const data=db.all(`SELECT * FROM profiles `,[],(err,rows)=>{
         if(err) return console.error(err.message);
         rows.forEach((row) => {
-            profile_id = row["profileID"];
-            server_id = row["serverID"]
-            uid=row["uid"]
+            let profile_id = row["profileID"];
+            let server_id = row["serverID"]
+            let uid=row["uid"]
             main(profile_id,uid).then((value)=>{
-                answer_id=value["answer_id"].toString(16);
-                url=value["url"];
+                let answer_id=value["answer_id"].toString(16);
+                let url=value["url"];
                 const answers=db.all(`SELECT *  FROM answers WHERE answerID  =? AND serverID = ?`,[answer_id,server_id],(err,roww)=>{
                     if(err) return console.error(err.message);
                     if(roww.length==0){
                     const channels=db.all(`SELECT *  FROM channels WHERE serverID  =? `,[server_id],(err,rowws)=>{
                         if(err) return console.error(err.message);
                         if(rowws.length>0){
-                            channel_id=rowws[0]["channelID"];
-                            channel = client.channels.cache.find(channel => channel.id == channel_id);
+                            let channel_id=rowws[0]["channelID"];
+                            let channel = client.channels.cache.find(channel => channel.id == channel_id);
                             channel.send(url);
                             db.run(`INSERT INTO answers VALUES (?,?)`,[server_id, answer_id],(err)=>{
                         if(err) return console.error(err.message);
@@ -74,7 +75,60 @@ async function quora_cat  (db,client){
             quora_cat(db,client);
         }, 5000);
 }
+
+// Start add_user ===========================================================
+function add_user(db,server_id,profile_id,uid){
+
+        const data=db.all(`SELECT *  FROM profiles WHERE profileID  = ? AND serverID = ?`,[profile_id,server_id],(err,row)=>{
+            if(err) return console.error(err.message);
+            if(row.length == 0){
+                db.run(`INSERT INTO profiles VALUES  (?,?,?)`,[server_id,profile_id,uid],(err)=>{
+                    if(err) return console.error(err.message);
+                });
+            }else{
+                console.log("user aleardy in");
+            }
+        });
+
+}
+
+// Start remove_user ===========================================================
+function remove_user(db,server_id,profile_id){
+        const data=db.all(`SELECT *  FROM profiles WHERE profileID  = ? AND serverID = ?`,[profile_id,server_id],(err,row)=>{
+            if(err) return console.error(err.message);
+            if(row.length == 0){
+                console.log("user aleardy deleted");
+            }else{
+                db.run(`DELETE FROM profiles WHERE serverID = ? AND profileID = ?`,[server_id,profile_id],(err)=>{
+                    if(err) return console.error(err.message);
+                });
+            }
+        });
+}
+
+
+// Start set_channel ===========================================================
+ function set_channel(db,server_id,channel_id){
+        const data=db.all(`SELECT channelID  FROM channels WHERE serverID  =? `,[server_id],(err,row)=>{
+            if(err) return console.error(err.message);
+            if(row.length>0){
+                db.run(`UPDATE channels SET channelID = ? WHERE serverID = ?`,[channel_id,server_id],(err)=>{
+                    if(err) return console.error(err.message);
+                });
+            }else{
+            db.run(`INSERT INTO channels VALUES (?,?)`,[server_id,channel_id],(err)=>{
+                if(err) return console.error(err.message);
+            });
+
+            }
+    });
+ }
+//
 module.exports= {   
-quora_cat:quora_cat
+quora_cat:quora_cat,
+add_user:add_user,
+remove_user:remove_user,
+set_channel:set_channel,
+    
 }
    
