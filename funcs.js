@@ -30,8 +30,11 @@ module.exports= async function main (profile,uid)  {
     });
       const body = await response.json();
       answer = body["data"]["user"]["recentPublicAndPinnedAnswersConnection"]["edges"][0]
+      url=answer["node"]["url"];
+    if (! url.startsWith("https")){
+        url="https://www.quora.com"+url;
+    }
 
-
-        return {"answer_id":answer["node"]["aid"],"url":"https://www.quora.com"+answer["node"]["url"]};
+        return {"answer_id":answer["node"]["aid"],"url":url};
     }
     
