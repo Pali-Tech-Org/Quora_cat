@@ -1,6 +1,8 @@
 const process = require('node:process');
 
-// Start main =========================================
+
+
+// main function =======================================================================
 async function main (profile,uid)  {
 
     const response = await fetch("https://www.quora.com/graphql/gql_para_POST?q=UserProfileAnswersMostRecent_RecentAnswers_Query", {
@@ -37,7 +39,10 @@ async function main (profile,uid)  {
 
         return {"answer_id":answer["node"]["aid"],"url":url};
     }
-// End main =========================================
+
+
+
+// quora_cat function ==================================================================
 async function quora_cat  (db,client){
     const data=db.all(`SELECT * FROM profiles `,[],(err,rows)=>{
         if(err) return console.error(err.message);
@@ -73,10 +78,11 @@ async function quora_cat  (db,client){
 }); 
     setTimeout(() => {
             quora_cat(db,client);
-        }, 5000);
+        }, 30000);
 }
 
-// Start add_user ===========================================================
+
+// add_user function ===================================================================
 function add_user(db,server_id,profile_id,uid){
 
         const data=db.all(`SELECT *  FROM profiles WHERE profileID  = ? AND serverID = ?`,[profile_id,server_id],(err,row)=>{
@@ -92,7 +98,9 @@ function add_user(db,server_id,profile_id,uid){
 
 }
 
-// Start remove_user ===========================================================
+
+// remove_user function ================================================================
+
 function remove_user(db,server_id,profile_id){
         const data=db.all(`SELECT *  FROM profiles WHERE profileID  = ? AND serverID = ?`,[profile_id,server_id],(err,row)=>{
             if(err) return console.error(err.message);
@@ -105,9 +113,9 @@ function remove_user(db,server_id,profile_id){
             }
         });
 }
+// 
 
-
-// Start set_channel ===========================================================
+// set_channel function ================================================================
  function set_channel(db,server_id,channel_id){
         const data=db.all(`SELECT channelID  FROM channels WHERE serverID  =? `,[server_id],(err,row)=>{
             if(err) return console.error(err.message);
@@ -123,12 +131,14 @@ function remove_user(db,server_id,profile_id){
             }
     });
  }
-//
+
+
+// Export ===============================================================================
 module.exports= {   
 quora_cat:quora_cat,
-add_user:add_user,
-remove_user:remove_user,
-set_channel:set_channel,
+    add_user:add_user,
+    remove_user:remove_user,
+    set_channel:set_channel,
     
 }
    
