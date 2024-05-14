@@ -1,7 +1,7 @@
 const process = require('node:process');
 
 
-module.exports= async function main (profile,uid)  {
+async function main (profile,uid)  {
 
     const response = await fetch("https://www.quora.com/graphql/gql_para_POST?q=UserProfileAnswersMostRecent_RecentAnswers_Query", {
       "headers": {
@@ -37,4 +37,44 @@ module.exports= async function main (profile,uid)  {
 
         return {"answer_id":answer["node"]["aid"],"url":url};
     }
-    
+async function quora_cat  (db,client){
+    const data=db.all(`SELECT * FROM profiles `,[],(err,rows)=>{
+        if(err) return console.error(err.message);
+        rows.forEach((row) => {
+            profile_id = row["profileID"];
+            server_id = row["serverID"]
+            uid=row["uid"]
+            main(profile_id,uid).then((value)=>{
+                answer_id=value["answer_id"].toString(16);
+                url=value["url"];
+                const answers=db.all(`SELECT *  FROM answers WHERE answerID  =? AND serverID = ?`,[answer_id,server_id],(err,roww)=>{
+                    if(err) return console.error(err.message);
+                    if(roww.length==0){
+                    const channels=db.all(`SELECT *  FROM channels WHERE serverID  =? `,[server_id],(err,rowws)=>{
+                        if(err) return console.error(err.message);
+                        if(rowws.length>0){
+                            channel_id=rowws[0]["channelID"];
+                            channel = client.channels.cache.find(channel => channel.id == channel_id);
+                            channel.send(url);
+                            db.run(`INSERT INTO answers VALUES (?,?)`,[server_id, answer_id],(err)=>{
+                        if(err) return console.error(err.message);
+                    });
+                        }
+                });       
+                    }
+            });
+
+            }
+     
+       );
+        });
+           
+}); 
+    setTimeout(() => {
+            quora_cat(db,client);
+        }, 5000);
+}
+module.exports= {   
+quora_cat:quora_cat
+}
+   
