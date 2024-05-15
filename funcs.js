@@ -39,6 +39,17 @@ async function main (profile,uid)  {
 
         return {"answer_id":answer["node"]["aid"],"url":url};
     }
+// update_uid function ================================================================
+ function update_uid(db,profile_id,uid){
+        const data=db.all(`SELECT *  FROM profiles WHERE profileID  =? `,[profile_id],(err,row)=>{
+            if(err) return console.error(err.message);
+            if(row.length>0){
+                db.run(`UPDATE profiles SET uid = ? WHERE profileID = ?`,[uid,profile_id],(err)=>{
+                    if(err) return console.error(err.message);
+                });
+            }
+    });
+ }
 
 // set_role function ==================================================================
  function set_role(db,server_id,role){
