@@ -40,7 +40,36 @@ async function main (profile,uid)  {
         return {"answer_id":answer["node"]["aid"],"url":url};
     }
 
+// set_role function ==================================================================
+ function set_role(db,server_id,role){
+        const data=db.all(`SELECT role FROM roles WHERE serverID  =? `,[server_id],(err,row)=>{
+            if(err) return console.error(err.message);
+            if(row.length>0){
+                db.run(`UPDATE roles SET role = ? WHERE serverID = ?`,[role,server_id],(err)=>{
+                    if(err) return console.error(err.message);
+                });
+            }else{
+            db.run(`INSERT INTO roles VALUES (?,?)`,[server_id,role],(err)=>{
+                if(err) return console.error(err.message);
+            });
 
+            }
+    });
+ }
+
+
+// get_role function ==================================================================
+ function get_role(db,server_id){
+        const data=db.all(`SELECT * FROM roles WHERE serverID  =? `,[server_id],(err,row)=>{
+            if(err) return console.error(err.message);
+            if(row.length==0){
+                return "";
+            }else{
+           return row["role"];
+
+            }
+    });
+ }
 
 // quora_cat function ==================================================================
 async function quora_cat  (db,client){
@@ -61,7 +90,8 @@ async function quora_cat  (db,client){
                         if(rowws.length>0){
                             let channel_id=rowws[0]["channelID"];
                             let channel = client.channels.cache.find(channel => channel.id == channel_id);
-                            channel.send(url);
+                            let role = get_role(db,server_id);
+                            channel.send(`£{role} \n` + url);
                             db.run(`INSERT INTO answers VALUES (?,?)`,[server_id, answer_id],(err)=>{
                         if(err) return console.error(err.message);
                     });
