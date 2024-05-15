@@ -30,14 +30,18 @@ async function main (profile,uid)  {
       "body": "{\"queryName\":\"UserProfileAnswersMostRecent_RecentAnswers_Query\",\"variables\":{\"uid\":"+uid+",\"first\":3,\"after\":\"0\",\"answerFilterTid\":null},\"extensions\":{\"hash\":\"f81036e47d9442c0b295c1b8fdce706183e0d41e3afffbbd97abf210dc6ae302\"}}",
       "method": "POST"
     });
+    try{
       const body = await response.json();
       let answer = body["data"]["user"]["recentPublicAndPinnedAnswersConnection"]["edges"][0]
       let url=answer["node"]["url"];
     if (! url.startsWith("https")){
         url="https://www.quora.com"+url;
     }
-
+    
         return {"answer_id":answer["node"]["aid"],"url":url};
+    }catch(e){
+        console.log("error")
+    }
     }
 // update_uid function ================================================================
  function update_uid(db,profile_id,uid){
@@ -70,21 +74,22 @@ async function main (profile,uid)  {
 
 
 // get_role function ==================================================================
- function get_role(db,server_id){
+function get_role(c,db,server_id,channel_id,url){
+       let role=""
         const data=db.all(`SELECT  * FROM roles WHERE serverID  =? `,[server_id],(err,row)=>{
             if(err) return console.error(err.message);
-            if(row.length==0){
-                return "";
-            }else{
-           return row[0]["role"];
-
+            if(row.length!=0){
+               role="<@&"+row[0]["role"]+">"
             }
+             let channel = c.channels.cache.find(channel => channel.id == channel_id);
+             channel.send(`${role} \n` + url);
+
     });
  }
 
 // get_users function =================================================================
  function get_users(c,db,channel_id){
-     console.log("here");
+    
         const data=db.all(`SELECT DISTINCT profileID,uid FROM profiles`,[],(err,rows)=>{
             if(err) return console.error(err.message);
             let text='';
@@ -103,23 +108,24 @@ async function main (profile,uid)  {
 async function quora_cat  (db,client){
     const data=db.all(`SELECT * FROM profiles `,[],(err,rows)=>{
         if(err) return console.error(err.message);
-        rows.forEach((row) => {
+        rows.forEach(async (row) => {
             let profile_id = row["profileID"];
             let server_id = row["serverID"]
             let uid=row["uid"]
-            main(profile_id,uid).then((value)=>{
+            
+           main(profile_id,uid).then((value)=>{
+                try{
                 let answer_id=value["answer_id"].toString(16);
                 let url=value["url"];
                 const answers=db.all(`SELECT *  FROM answers WHERE answerID  =? AND serverID = ?`,[answer_id,server_id],(err,roww)=>{
                     if(err) return console.error(err.message);
                     if(roww.length==0){
-                    const channels=db.all(`SELECT *  FROM channels WHERE serverID  =? `,[server_id],(err,rowws)=>{
+                    const channels=db.all(`SELECT *  FROM channels WHERE serverID  =? `,[server_id],async (err,rowws)=>{
                         if(err) return console.error(err.message);
                         if(rowws.length>0){
                             let channel_id=rowws[0]["channelID"];
-                            let channel = client.channels.cache.find(channel => channel.id == channel_id);
-                            let role = get_role(db,server_id);
-                            channel.send(`${role} \n` + url);
+                            get_role(client,db,server_id,channel_id,url);
+                            
                             db.run(`INSERT INTO answers VALUES (?,?)`,[server_id, answer_id],(err)=>{
                         if(err) return console.error(err.message);
                     });
@@ -128,15 +134,18 @@ async function quora_cat  (db,client){
                     }
             });
 
-            }
+            }catch(e){
+                console.log("error")
+            }});
+                                      
      
-       );
+       
         });
            
 }); 
     setTimeout(() => {
             quora_cat(db,client);
-        }, 5000);
+        }, 600000);
 }
 
 
