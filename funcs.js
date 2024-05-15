@@ -71,12 +71,12 @@ async function main (profile,uid)  {
 
 // get_role function ==================================================================
  function get_role(db,server_id){
-        const data=db.all(`SELECT * FROM roles WHERE serverID  =? `,[server_id],(err,row)=>{
+        const data=db.all(`SELECT  * FROM roles WHERE serverID  =? `,[server_id],(err,row)=>{
             if(err) return console.error(err.message);
             if(row.length==0){
                 return "";
             }else{
-           return row["role"];
+           return row[0]["role"];
 
             }
     });
@@ -84,7 +84,7 @@ async function main (profile,uid)  {
 
 // get_users function =================================================================
  function get_users(db,channel_id){
-        const data=db.all(`SELECT * FROM profiles WHERE `,[],(err,rows)=>{
+        const data=db.all(`SELECT DISTINCT(*) FROM profiles WHERE `,[],(err,rows)=>{
             if(err) return console.error(err.message);
            rows.forEach((row) =>{
 
@@ -193,6 +193,8 @@ quora_cat:quora_cat,
     add_user:add_user,
     remove_user:remove_user,
     set_channel:set_channel,
+    get_users:get_users,
+    set_role:set_role,
     
 }
    
