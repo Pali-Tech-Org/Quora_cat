@@ -44,20 +44,25 @@ client.on('messageCreate',(msg)=>{
         const uid=command.split(" ")[2];
         update_uid(db,profile_id,uid)
     }
-     }else if(msg.member.permissions.has(PermissionsBitField.Flags.KickMembers)){
+     }
+     if(msg.member.permissions.has(PermissionsBitField.Flags.KickMembers)){
    
      if(command.startsWith("qr!set_role")){
-            const role=command.split(" ")[1];
+            console.log("setting role"); 
+            const role=command.split(" ")[1].replace(/<|&|>|@/g,'');
             set_role(db,server_id,role);
     }
     else if(command.startsWith("qr!set")){
+        console.log("setting channel");
         set_channel(db,server_id,channel_id);
     
     }else if(command.startsWith("qr!add")){
+        console.log("add_user command");
         const profile_id=command.split(" ")[1];
         const uid=command.split(" ")[2];
         add_user(db,server_id,profile_id,uid);
       }else if(command.startsWith("qr!remove")){ 
+          console.log("remove user command");
         const profile_id=command.split(" ")[1];
         remove_user(db,server_id,profile_id);
       }
@@ -71,4 +76,4 @@ client.on('messageCreate',(msg)=>{
 
 //================================================================================================
 
-client.login("token");
+client.login("Token");
