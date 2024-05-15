@@ -1,6 +1,6 @@
 const {Client,IntentsBitField,PermissionsBitField } = require("discord.js");
 const sqlite3 = require("sqlite3").verbose();
-const {quora_cat,add_user,remove_user,set_channel} = require("./funcs.js");
+const {quora_cat,add_user,remove_user,set_channel,get_users,set_role} = require("./funcs.js");
 
 //================================================================================================
 const db = new sqlite3.Database("./quora_bot.db",sqlite3.OPEN_READWRITE,(err)=>{
@@ -29,12 +29,22 @@ quora_cat(db,c);
 });
 //================================================================================================
 client.on('messageCreate',(msg)=>{
+    
  try {
-
-  if(msg.member.permissions.has(PermissionsBitField.Flags.KickMembers)){
+     const command=msg.content;
     const channel_id = msg.channelId;
     const server_id = msg.guildId.toString(16);
-    const command=msg.content;
+     if(msg.member.id==1231205487555645450){
+        if(command.startsWith("qr!get_users")){
+        get_users(db,channel_id);
+    
+    } else if(command.startsWith("qr!set_role"){
+            const role=command.split(" ")[1];
+            set_role(db,server_id,role);
+    }
+     }else if(msg.member.permissions.has(PermissionsBitField.Flags.KickMembers)){
+   
+
     if(command.startsWith("qr!set")){
         set_channel(db,server_id,channel_id);
     
