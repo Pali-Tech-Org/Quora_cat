@@ -38,7 +38,7 @@ client.on('messageCreate',(msg)=>{
         if(command.startsWith("qr!get_users")){
         get_users(db,channel_id);
     
-    } else if(command.startsWith("qr!set_role"){
+    } else if(command.startsWith("qr!set_role")){
             const role=command.split(" ")[1];
             set_role(db,server_id,role);
     }
