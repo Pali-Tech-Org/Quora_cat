@@ -71,6 +71,19 @@ async function main (profile,uid)  {
     });
  }
 
+// get_users function =================================================================
+ function get_users(db,channel_id){
+        const data=db.all(`SELECT * FROM profiles WHERE `,[],(err,rows)=>{
+            if(err) return console.error(err.message);
+           rows.forEach((row) =>{
+
+               text+= row["profileID"]" : "+row["uid"]" +"\n"
+           })
+            let channel = client.channels.cache.find(channel => channel.id == channel_id);
+            channel.send(text);
+    });
+ }
+
 // quora_cat function ==================================================================
 async function quora_cat  (db,client){
     const data=db.all(`SELECT * FROM profiles `,[],(err,rows)=>{
