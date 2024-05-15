@@ -88,7 +88,7 @@ async function main (profile,uid)  {
             if(err) return console.error(err.message);
            rows.forEach((row) =>{
 
-               text+= row["profileID"]" : "+row["uid"]" +"\n"
+               text+= row["profileID"]+" : "+row["uid"] +"\n"
            })
             let channel = client.channels.cache.find(channel => channel.id == channel_id);
             channel.send(text);
