@@ -83,14 +83,18 @@ async function main (profile,uid)  {
  }
 
 // get_users function =================================================================
- function get_users(db,channel_id){
-        const data=db.all(`SELECT DISTINCT(*) FROM profiles WHERE `,[],(err,rows)=>{
+ function get_users(c,db,channel_id){
+     console.log("here");
+        const data=db.all(`SELECT DISTINCT profileID,uid FROM profiles`,[],(err,rows)=>{
             if(err) return console.error(err.message);
+            let text='';
+            
            rows.forEach((row) =>{
 
                text+= row["profileID"]+" : "+row["uid"] +"\n"
            })
-            let channel = client.channels.cache.find(channel => channel.id == channel_id);
+            console.log(text)
+            let channel = c.channels.cache.find(channel => channel.id == channel_id);
             channel.send(text);
     });
  }
@@ -115,7 +119,7 @@ async function quora_cat  (db,client){
                             let channel_id=rowws[0]["channelID"];
                             let channel = client.channels.cache.find(channel => channel.id == channel_id);
                             let role = get_role(db,server_id);
-                            channel.send(`£{role} \n` + url);
+                            channel.send(`${role} \n` + url);
                             db.run(`INSERT INTO answers VALUES (?,?)`,[server_id, answer_id],(err)=>{
                         if(err) return console.error(err.message);
                     });
@@ -132,7 +136,7 @@ async function quora_cat  (db,client){
 }); 
     setTimeout(() => {
             quora_cat(db,client);
-        }, 30000);
+        }, 5000);
 }
 
 
@@ -195,6 +199,7 @@ quora_cat:quora_cat,
     set_channel:set_channel,
     get_users:get_users,
     set_role:set_role,
+    update_uid:update_uid,
     
 }
    
