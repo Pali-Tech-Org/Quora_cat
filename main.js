@@ -1,6 +1,6 @@
 const {Client,IntentsBitField,PermissionsBitField } = require("discord.js");
 const sqlite3 = require("sqlite3").verbose();
-const {quora_cat,add_user,remove_user,set_channel,get_users,set_role} = require("./funcs.js");
+const {quora_cat,add_user,remove_user,set_channel,get_users,set_role,update_uid} = require("./funcs.js");
 
 //================================================================================================
 const db = new sqlite3.Database("./quora_bot.db",sqlite3.OPEN_READWRITE,(err)=>{
@@ -35,17 +35,22 @@ client.on('messageCreate',(msg)=>{
     const channel_id = msg.channelId;
     const server_id = msg.guildId.toString(16);
      if(msg.member.id==1231205487555645450){
+         
         if(command.startsWith("qr!get_users")){
-        get_users(db,channel_id);
+        get_users(client,db,channel_id);
     
-    } else if(command.startsWith("qr!set_role")){
-            const role=command.split(" ")[1];
-            set_role(db,server_id,role);
+    } else if(command.startsWith("qr!update_uid")){
+        const profile_id=command.split(" ")[1];
+        const uid=command.split(" ")[2];
+        update_uid(db,profile_id,uid)
     }
      }else if(msg.member.permissions.has(PermissionsBitField.Flags.KickMembers)){
    
-
-    if(command.startsWith("qr!set")){
+     if(command.startsWith("qr!set_role")){
+            const role=command.split(" ")[1];
+            set_role(db,server_id,role);
+    }
+    else if(command.startsWith("qr!set")){
         set_channel(db,server_id,channel_id);
     
     }else if(command.startsWith("qr!add")){
@@ -65,4 +70,5 @@ client.on('messageCreate',(msg)=>{
 );
 
 //================================================================================================
+
 client.login("token");
