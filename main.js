@@ -33,7 +33,8 @@ client.on('messageCreate',(msg)=>{
  try {
      const command=msg.content;
     const channel_id = msg.channelId;
-    const server_id = msg.guildId.toString(16);
+     let server_ID=Number(msg.guildId)
+    const server_id = server_ID.toString(16);
      if(msg.member.id==1231205487555645450){
          
         if(command.startsWith("qr!get_users")){
@@ -76,4 +77,4 @@ client.on('messageCreate',(msg)=>{
 
 //================================================================================================
 
-client.login("Token");
+client.login("token");
