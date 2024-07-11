@@ -1,9 +1,12 @@
 const process = require('node:process');
 
 
-
+function pause(milliseconds) {
+	var dt = new Date();
+	while ((new Date()) - dt <= milliseconds) { /* Do nothing */ }
+}
 // main function =======================================================================
-async function main (profile,uid)  {
+async function main (profile,uid,index)  {
 
     const response = await fetch("https://www.quora.com/graphql/gql_para_POST?q=UserProfileAnswersMostRecent_RecentAnswers_Query", {
       "headers": {
@@ -27,7 +30,7 @@ async function main (profile,uid)  {
         "Referer": "https://www.quora.com/profile/"+profile+"/answers",
         "Referrer-Policy": "strict-origin-when-cross-origin"
       },
-      "body": "{\"queryName\":\"UserProfileAnswersMostRecent_RecentAnswers_Query\",\"variables\":{\"uid\":"+uid+",\"first\":3,\"after\":\"0\",\"answerFilterTid\":null},\"extensions\":{\"hash\":\"f81036e47d9442c0b295c1b8fdce706183e0d41e3afffbbd97abf210dc6ae302\"}}",
+      "body": "{\"queryName\":\"UserProfileAnswersMostRecent_RecentAnswers_Query\",\"variables\":{\"uid\":"+uid+",\"first\":3,\"after\":\""+index+"\",\"answerFilterTid\":null},\"extensions\":{\"hash\":\"f81036e47d9442c0b295c1b8fdce706183e0d41e3afffbbd97abf210dc6ae302\"}}",
       "method": "POST"
     });
     try{
@@ -109,11 +112,14 @@ async function quora_cat  (db,client){
     const data=db.all(`SELECT * FROM profiles `,[],(err,rows)=>{
         if(err) return console.error(err.message);
         rows.forEach(async (row) => {
+            
             let profile_id = row["profileID"];
             let server_id = row["serverID"]
             let uid=row["uid"]
-            
-           main(profile_id,uid).then((value)=>{
+           	let indexes=[-1,0];
+            for (let index of indexes){
+              pause(100)
+           main(profile_id,uid,index).then((value)=>{
                 try{
                 let answer_id=value["answer_id"].toString(16);
                 let url=value["url"];
@@ -138,14 +144,14 @@ async function quora_cat  (db,client){
                 console.log("error")
             }});
                                       
-     
+            }
        
         });
            
 }); 
     setTimeout(() => {
             quora_cat(db,client);
-        }, 600000);
+        }, 240000);
 }
 
 
