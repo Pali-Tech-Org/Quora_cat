@@ -19,7 +19,7 @@ so bot may jum some answer if time between them was smaller then time interval
 to find is of quora profile follow those steps  
 1- go to user profileand open inspect tool  
 2- go to the network and chose Fetch/XHR  
-![setting the inspect tool](image1.png)  
+![setting the inspect tool](./image1.PNG)  
 3- scroll down on the quora page you will see new request sent to load more content click the request  
 4- go to playload you will find the uid there (the profile id)  
-![getting profile id](image2.png)
+![getting profile id](./image2.PNG)
