@@ -1,9 +1,0 @@
-CREATE TABLE answers (serverID varchar(20),answerID varchar(20));
-CREATE TABLE channels (serverID varchar(20),channelID int,PRIMARY KEY (serverID));
-CREATE TABLE profiles (serverID varchar(20),profileID varchar(20),uid varchar(20));
-
-
-
-
-
-
