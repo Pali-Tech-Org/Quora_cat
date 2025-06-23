@@ -53,8 +53,9 @@ async def get_users(c,db,channel_id):
 
 
 async def quora_cat(client):
-    db = sqlite3.connect('quora_bot.db')
+    
     while True:
+        db = sqlite3.connect('quora_bot.db')
         try:
             data = db.execute("SELECT * FROM profiles").fetchall()
             for row in data:            
