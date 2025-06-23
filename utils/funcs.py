@@ -1,5 +1,8 @@
 
 import requests, json, sqlite3
+import asyncio
+import traceback
+
 from time import sleep
 
 def main (profile,uid,index):
@@ -60,7 +63,7 @@ async def quora_cat(client):
                 uid = row[2]
                 indexes = [-1,0]
                 for index in indexes:
-                    sleep(5)
+                    await asyncio.sleep(5)
                     value = main(profile_id,uid,index)
                     answer_id = str(value["answer_id"])
                     url = value["url"]
@@ -73,12 +76,13 @@ async def quora_cat(client):
                             await channel.send(url)
                             db.execute("INSERT INTO answers VALUES (?,?)",(server_id, answer_id))
                             db.commit()
-        except:
-            print("Error")
+        except Exception as e:
+            print("Exception in quora_cat:")
+            traceback.print_exc()
 
     
         db.close()
-        sleep(600)
+        await asyncio.sleep(600)
 
 
 def add_user(db,server_id,profile_id,uid):
