@@ -5,6 +5,7 @@ from time import sleep
 intents = discord.Intents.default()
 intents.message_content = True
 client = discord.Client(intents=intents)
+TOKEN = ""
 
 @client.event
 async def on_message(message):
@@ -54,6 +55,6 @@ if __name__ == '__main__':
             db.execute(line)
         db.commit()
     db.close()
-    client.run("Token")
+    client.run(TOKEN)
 
 
