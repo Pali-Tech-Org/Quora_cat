@@ -50,11 +50,11 @@ async def on_ready():
 
 if __name__ == '__main__':
     db = sqlite3.connect('quora_bot.db')
-    with open("Schema.sql") as file:
-        for line in file.readlines():
-            db.execute(line)
-        db.commit()
-    db.close()
+    #with open("Schema.sql") as file:
+    #    for line in file.readlines():
+    #        db.execute(line)
+    #    db.commit()
+    #db.close()
     client.run(TOKEN)
 
 
