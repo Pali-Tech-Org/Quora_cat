@@ -107,7 +107,11 @@ def set_channel(db,server_id,channel_id):
     else:
         db.execute("INSERT INTO channels VALUES (?,?)",(server_id,channel_id))
         db.commit()
-
+def make_message(followers):
+    message = "```"
+    for f in followers:
+        message += f + "\n"
+    return message + "\n ```"
 
 
    
