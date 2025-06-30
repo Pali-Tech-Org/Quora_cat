@@ -102,11 +102,11 @@ async def on_message(message):
             profile = Profile(profile)
 
             await message.reply(f"{profile.username}: {profile.uid}\n\
-    Followers: {profile.followers_counter}\n\
-    Following: {profile.following_counter}\n\
-    This month views: {profile.month_views}\n\
-    This total views: {profile.total_views}\n\
-    [avatar]({profile.avatar})")
+Followers: {profile.followers_counter}\n\
+Following: {profile.following_counter}\n\
+This month views: {profile.month_views}\n\
+This total views: {profile.total_views}\n\
+[avatar]({profile.avatar})")
     if command.startswith("!boycott"):
         with open("data.json",encoding="utf-8") as f:
             d = f.read()
@@ -114,7 +114,7 @@ async def on_message(message):
         _,product = message.content.split()
         for pr in boycotted_productes["data"]:
             if pr["attributes"]["name"].casefold() == product.casefold():
-               await message.reply(f"""yes, **{product.casefold()}** is on the b                                                                                                                                                             oycott list.
+               await message.reply(f"""yes, **{product.casefold()}** is on the boycott list.
 
 you want to see proof? type !proof **{product.casefold()}**""")
                return
