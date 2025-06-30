@@ -80,16 +80,16 @@ async def on_message(message):
                 await asyncio.sleep(20)
                 if len(followers) < amount:
                     break
-        elif msg.content.startswith("qr!following "):
-            _,profile = msg.content.split()
+        elif command.startswith("qr!following "):
+            _,profile = command.split()
             fol = Following(profile)
             cursor = 1
             amount = 10
             while True:
                 followers = fol.get_following(amount,cursor)
-                message = make_message(followers)
+                message_text = make_message(followers)
                 cursor += amount
-                await client.get_channel(msg.channel.id).send(message)
+                await client.get_channel(message.channel.id).send(message_text)
                 await asyncio.sleep(20)
                 if len(followers) < amount:
                     break
@@ -107,7 +107,7 @@ async def on_message(message):
     This month views: {profile.month_views}\n\
     This total views: {profile.total_views}\n\
     [avatar]({profile.avatar})")
-    if message.content.startswith("!boycott"):
+    if command.startswith("!boycott"):
         with open("data.json",encoding="utf-8") as f:
             d = f.read()
             boycotted_productes = json.loads(d)
@@ -119,7 +119,7 @@ async def on_message(message):
 you want to see proof? type !proof **{product.casefold()}**""")
                return
         await message.reply("Product safe")
-    if message.content.startswith("!proof"):
+    if command.startswith("!proof"):
         with open("data.json",encoding="utf-8") as f:
             d = f.read()
             boycotted_productes = json.loads(d)
