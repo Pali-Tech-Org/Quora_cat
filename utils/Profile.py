@@ -51,6 +51,6 @@ class Profile:
         self.total_views = self.get_data("allTimePublicContentViews",script_text)
         imgURl = soup.find("meta", attrs={"property": 'og:image'})['content']
         self.avatar = imgURl
-        
-        self.uid =  imgURl.split("-")[2]
+        script_text = script_tags[3].text
+        self.uid =  self.get_data("uid",script_text)
  
